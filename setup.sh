@@ -8,7 +8,7 @@ EOF
 
 while IFS= read -r command; do
     if [[ -n "$command" ]]; then
-        tmux send-keys -t arch-vm-base "$command" C-m
+        tmux send-keys -t openbsd-vm-base "$command" C-m
         sleep 1
     fi
 done <<< "$INITIAL_COMMANDS"
@@ -64,16 +64,16 @@ locale-gen
 
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-echo "archlinux" > /etc/hostname  
+echo "openbsd" > /etc/hostname  
 
 systemctl enable fstrim.timer
 
 sed -i '/^\[multilib\]$/,/^\s*$/ s|^#*\s*Include\s*=.*|Include = /etc/pacman.d/mirrorlist|; /^\s*Include\s*=/ s|^#*||' /etc/pacman.conf
 
-echo "root:arch" | chpasswd
+echo "root:openbsd" | chpasswd
 
-useradd -m -g users -G wheel,storage,power -s /bin/bash arch
-echo "arch:arch" | chpasswd
+useradd -m -g users -G wheel,storage,power -s /bin/bash bsd
+echo "bsd:bsd" | chpasswd
 
 sed -i '/^# %wheel/s/^# //' /etc/sudoers
 echo "Defaults rootpw" >> /etc/sudoers
@@ -99,7 +99,7 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/Xorg :0 -config /etc/X11/xorg.conf
 Restart=always
-User=arch
+User=bsd
 Environment=DISPLAY=:0
 
 [Install]
@@ -114,12 +114,12 @@ INSTALL_SCRIPT
 EOF
 )
 
-tmux send-keys -t arch-vm-base "$INSTALLATION_SCRIPT" C-m 
+tmux send-keys -t openbsd-vm-base "$INSTALLATION_SCRIPT" C-m 
 
 echo "Waiting 5 seconds for the installation script to be created..."
 sleep 5 &&
 
 EXECUTE_INSTALL_SCRIPT="bash install.sh"
 
-tmux send-keys -t arch-vm-base "$EXECUTE_INSTALL_SCRIPT" C-m
+tmux send-keys -t openbsd-vm-base "$EXECUTE_INSTALL_SCRIPT" C-m
 
